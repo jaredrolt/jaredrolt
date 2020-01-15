@@ -3,7 +3,7 @@ import SEO from "../components/seo"
 
 const IndexPage = () => (
   <>
-    <SEO title="Home" />
+    <SEO />
     <div className="flex-center position-ref full-height">
       <div className="content">
         <div className="title m-b-md" style={{ marginBottom: '1rem' }}>
