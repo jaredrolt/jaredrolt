@@ -34,6 +34,13 @@ function SEO({ description, lang, meta, title }) {
       }}
       title={title}
       titleTemplate={`%s | ${site.siteMetadata.title}`}
+      link={[
+        {
+          href: 'https://fonts.googleapis.com/css?family=Raleway:100,500',
+          rel: 'stylesheet',
+          type: 'text/css'
+        }
+      ]}
       meta={[
         {
           name: `description`,
