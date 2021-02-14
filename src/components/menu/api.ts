@@ -67,14 +67,17 @@ export type Recipes = Array<{
       hide_from_shopping_list: boolean | null;
       id: number;
       ingredient: {
-        ingredient_display_override: string;
-        ingredient_measurement: {
-          id: number;
-          title: string;
-          abbreviation: string; 
-        };
-        modifier: string;
-      }
+        id: number;
+        title: string;
+        ingredient_category: number;
+      };
+      ingredient_display_override: string;
+      ingredient_measurement: {
+        id: number;
+        title: string;
+        abbreviation: string; 
+      } | null;
+      modifier: string;
     }>;
     method: string;
     nutrition: {

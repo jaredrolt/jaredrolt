@@ -48,7 +48,7 @@ export const Menu = () => {
   return (
     <div className="menu">
       <SelectWeek value={week} onChange={handleWeekChange} />
-      <h1>Recipe - Week {week + 1}</h1>
+      <h1>Menu - Week {week + 1}</h1>
       {weeks.map((_, weekIndex) => (
         <Day key={weekIndex} day={data[0].days[(week * 7) + weekIndex]} onSelectMeal={handleSelectMeal}  />
       ))}
@@ -61,7 +61,20 @@ export const Menu = () => {
             <img src={selectedMeal.recipe.feature_image.url} alt={selectedMeal.recipe.feature_image.name} />
             <h2>{selectedMeal.recipe.title}</h2>
             {selectedRecipeData && (
-              <div dangerouslySetInnerHTML={{ __html: selectedRecipeData.recipe_data[0].method }} />
+              <div className="ingredients">
+                <h4>Ingredients</h4>
+                {selectedRecipeData.recipe_data[0].ingredients.map((ingredient, ingredientIndex) => (
+                  <div key={ingredientIndex} className="ingredient">
+                    {ingredient.ingredient_display_override || `${ingredient.amount} ${ingredient.ingredient_measurement ? `${ingredient.ingredient_measurement.abbreviation}.` : ''} ${ingredient.ingredient.title} ${ingredient.modifier ? `(${ingredient.modifier})` : ''}`}
+                  </div>
+                ))}
+              </div>
+            )}
+            {selectedRecipeData && (
+              <>
+                <h4>Method</h4>
+                <div dangerouslySetInnerHTML={{ __html: selectedRecipeData.recipe_data[0].method }} />
+              </>
             )}
           </div>
         </>
@@ -73,7 +86,7 @@ export const Menu = () => {
 const Day = ({ day, onSelectMeal }: { day: WeekDay, onSelectMeal?: (day: WeekDay, meal: MealType) => void }) => {
   return (
     <div>
-      {day.title}
+      <h5>{day.title}</h5>
       <div className="meals">
         {day.meals.map((meal, mealIndex) => (
           <Meal key={mealIndex} meal={meal} onClick={() => onSelectMeal?.(day, meal)} />
