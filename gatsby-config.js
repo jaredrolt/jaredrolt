@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
     title: `Jared Rolt - Software Engineer`,
-    description: `Full Stack Development at HealthEngine with PHP/React/Typescript`,
+    description: `Frontend at Canva`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
