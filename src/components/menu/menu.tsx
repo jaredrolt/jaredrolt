@@ -46,7 +46,7 @@ export const Menu = () => {
   }
 
   return (
-    <div>
+    <div className="menu">
       <SelectWeek value={week} onChange={handleWeekChange} />
       <h1>Recipe - Week {week + 1}</h1>
       {weeks.map((_, weekIndex) => (
@@ -55,15 +55,14 @@ export const Menu = () => {
       {selectedMeal && 'id' in selectedMeal.recipe && (
         <>
           <style dangerouslySetInnerHTML={{ __html: 'body { overflow: hidden; }' }} />
-          <div className="modal-bg" onClick={handleCloseModal}>
-            <div className="modal">
-              <h3>{selectedMeal.title}</h3>
-              <img src={selectedMeal.recipe.feature_image.url} alt={selectedMeal.recipe.feature_image.name} />
-              <h2>{selectedMeal.recipe.title}</h2>
-              {selectedRecipeData && (
-                <div dangerouslySetInnerHTML={{ __html: selectedRecipeData.recipe_data[0].method }} />
-              )}
-            </div>
+          <div className="modal-bg" onClick={handleCloseModal} />
+          <div className="modalx">
+            <h3>{selectedMeal.title}</h3>
+            <img src={selectedMeal.recipe.feature_image.url} alt={selectedMeal.recipe.feature_image.name} />
+            <h2>{selectedMeal.recipe.title}</h2>
+            {selectedRecipeData && (
+              <div dangerouslySetInnerHTML={{ __html: selectedRecipeData.recipe_data[0].method }} />
+            )}
           </div>
         </>
       )}
@@ -91,9 +90,9 @@ const Meal = ({ meal, onClick }: { meal: MealType, onClick?: () => void }) => {
 
   return (
     <div className="meal" onClick={onClick}>
-      {meal.title}
+      <h6>{meal.title}</h6>
       <img src={meal.recipe.feature_image.url} />
-      {meal.recipe.title}
+      <h6>{meal.recipe.title}</h6>
     </div>
   );
 }
