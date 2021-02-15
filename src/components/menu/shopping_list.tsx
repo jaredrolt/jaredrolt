@@ -1,12 +1,11 @@
 import { Link } from 'gatsby';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { IngredientCategory, RecipeIngredient, useIngredientCategories, useMenuPlannings, useRecipesQuery } from './api';
-import { SelectWeek, exists } from './menu';
+import { SelectWeek, exists, useSelectedRecipeIds, useWeek } from './menu';
 
 export const ShoppingList = () => {
-  const [week, setWeek] = useState(0);
+  const [week, setWeek] = useWeek();
   const handleWeekChange = useCallback(week => setWeek(week), []);
-  // const weeks = Array.from(Array(7));
 
   const { data } = useMenuPlannings();
 
@@ -14,10 +13,11 @@ export const ShoppingList = () => {
 
   const { data: ingredientCategories } = useIngredientCategories();
 
+  const [selectedRecipeIds] = useSelectedRecipeIds();
+
   useEffect(() => {
     if (!data) return;
     let recipeIds = [];
-    const selectedRecipeIds = JSON.parse(window.localStorage.getItem('selectedRecipes') || 'null');
     const selectedRecipeIdsForWeek = selectedRecipeIds[week] || [];
     recipeIds = selectedRecipeIdsForWeek;
     if (recipeIds.length === 0) {
@@ -29,14 +29,12 @@ export const ShoppingList = () => {
         .filter(exists));
     }
     getRecipes(Array.from(new Set(recipeIds)));
-  }, [data, week]);
+  }, [data, week, selectedRecipeIds]);
 
   const ingredients = useMemo(() => {
     if (!recipes.data) return [];
 
     return recipes.data.reduce((carry: any[], recipe) => {
-      if (recipe.recipe_data)
-      // let existingIngredient = 
       carry.push(...recipe.recipe_data[0].ingredients)
       return carry;
     }, []);

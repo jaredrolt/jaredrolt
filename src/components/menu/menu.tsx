@@ -1,6 +1,13 @@
 import { Link } from 'gatsby';
 import React, { useCallback, useState, MouseEvent, useEffect, useMemo } from 'react';
+import { useLocalStorage } from '../../util/use_local_storage';
 import { MenuPlannings, useMenuPlannings, useRecipesQuery } from './api';
+
+const LOCAL_STORAGE_WEEK = 'week';
+const LOCAL_STORAGE_SELECTED_RECIPES = 'selectedRecipes';
+
+export const useSelectedRecipeIds = () => useLocalStorage<{[key:number]:number[]}>(LOCAL_STORAGE_SELECTED_RECIPES, {});
+export const useWeek = () => useLocalStorage<number>(LOCAL_STORAGE_WEEK, 0);
 
 export type WeekDay = MenuPlannings[0]['days'][0];
 export type MealType = WeekDay['meals'][0];
@@ -8,7 +15,7 @@ export type MealType = WeekDay['meals'][0];
 export const exists = <T,>(x: T | undefined): x is T => x !== undefined;
 
 export const Menu = () => {
-  const [week, setWeek] = useState(0);
+  const [week, setWeek] = useWeek();
   const handleWeekChange = useCallback(week => setWeek(week), []);
   const weeks = Array.from(Array(7));
   const [selectedMeal, setSelectedMeal] = useState<MealType|undefined>();
@@ -22,34 +29,27 @@ export const Menu = () => {
 
   const { query: getRecipes, resource: recipes } = useRecipesQuery();
 
-  useEffect(() => {
-    if (!data) return;
-    const recipeIds = data[0].days.flatMap(day =>
+  const recipeIds = useMemo(() => {
+    if (!data) return [];
+    return data[0].days.slice(week * 7, (1 + week) * 7).flatMap(day =>
       day.meals.map(meal =>
         'id' in meal.recipe
           ? meal.recipe.id
           : undefined)
       .filter(exists));
+  }, [data, week]);
+
+  useEffect(() => {
+    if (!recipeIds.length) return;
     getRecipes(recipeIds);
-  }, [data]);
+  }, [recipeIds]);
 
   const selectedRecipeData = useMemo(() => {
     if (!selectedMeal || !('id' in selectedMeal.recipe)) return;
     return recipes?.data?.find(recipe => 'id' in selectedMeal.recipe && recipe.id === selectedMeal.recipe.id);
   }, [recipes, selectedMeal]);
 
-  const [selectedRecipes, setSelectedRecipes] = useState<{[key:number]:number[]}>({});
-
-  useEffect(() => {
-    const selectedRecipes = JSON.parse(window.localStorage.getItem('selectedRecipes') || 'null');
-    if (selectedRecipes) {
-      setSelectedRecipes(selectedRecipes);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('selectedRecipes', JSON.stringify(selectedRecipes));
-  }, [selectedRecipes]);
+  const [selectedRecipes, setSelectedRecipes] = useSelectedRecipeIds();
 
   const handleToggleMeal = useCallback((meal: MealType) => {
     if (!('id' in meal.recipe)) return;
@@ -73,6 +73,15 @@ export const Menu = () => {
     }));
   }, [selectedRecipes, week]);
 
+  const handleToggleIncludes = useCallback(() => {
+    setSelectedRecipes(selectedRecipes => ({
+      ...selectedRecipes,
+      [week]: (selectedRecipes[week] || []).length > 0
+        ? []
+        : [...recipeIds],
+    }));
+  }, [week, recipeIds]);
+
   if (!data) {
     return (
       <select>
@@ -88,6 +97,7 @@ export const Menu = () => {
         <Link to="/shopping-list">Shopping List</Link>
       </div>
       <h1>Menu - Week {week + 1}</h1>
+      <button className="link-button" onClick={handleToggleIncludes}>Toggle includes</button>
       {weeks.map((_, weekIndex) => (
         <Day key={weekIndex} day={data[0].days[(week * 7) + weekIndex]} onSelectMeal={handleSelectMeal} selectedRecipes={selectedRecipes[week] || []} onIncludeMealToggle={handleToggleMeal}  />
       ))}
