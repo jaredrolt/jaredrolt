@@ -1,10 +1,10 @@
 import React, { useCallback, useState, MouseEvent, useEffect, useMemo } from 'react';
 import { MenuPlannings, useMenuPlannings, useRecipesQuery } from './api';
 
-type WeekDay = MenuPlannings[0]['days'][0];
-type MealType = WeekDay['meals'][0];
+export type WeekDay = MenuPlannings[0]['days'][0];
+export type MealType = WeekDay['meals'][0];
 
-const exists = <T,>(x: T | undefined): x is T => x !== undefined;
+export const exists = <T,>(x: T | undefined): x is T => x !== undefined;
 
 export const Menu = () => {
   const [week, setWeek] = useState(0);
@@ -110,7 +110,7 @@ const Meal = ({ meal, onClick }: { meal: MealType, onClick?: () => void }) => {
   );
 }
 
-const SelectWeek = ({ value, onChange }: { value: number, onChange: (index: number) => void }) => {
+export const SelectWeek = ({ value, onChange }: { value: number, onChange: (index: number) => void }) => {
   const { loading, data } = useMenuPlannings();
 
   if (!data) {

@@ -50,6 +50,26 @@ export const useMenuPlannings = () => {
   return useResource<MenuPlannings>(url);
 }
 
+export type Ingedient = {
+  id: number;
+  title: string;
+  ingredient_category: number;
+};
+
+export type RecipeIngredient = {
+  amount: number;
+  hide_from_shopping_list: boolean | null;
+  id: number;
+  ingredient: Ingedient;
+  ingredient_display_override: string;
+  ingredient_measurement: {
+    id: number;
+    title: string;
+    abbreviation: string; 
+  } | null;
+  modifier: string;
+}
+
 export type Recipes = Array<{
   cook_time_in_minutes: number;
   feature_image: {
@@ -62,23 +82,7 @@ export type Recipes = Array<{
     country: string;
     gender: string;
     id: number;
-    ingredients: Array<{
-      amount: number;
-      hide_from_shopping_list: boolean | null;
-      id: number;
-      ingredient: {
-        id: number;
-        title: string;
-        ingredient_category: number;
-      };
-      ingredient_display_override: string;
-      ingredient_measurement: {
-        id: number;
-        title: string;
-        abbreviation: string; 
-      } | null;
-      modifier: string;
-    }>;
+    ingredients: RecipeIngredient[];
     method: string;
     nutrition: {
       calories_per_serve: number;
@@ -126,6 +130,15 @@ export const useRecipesQuery = () => {
     resource,
   };
 };
+
+export type IngredientCategory = {
+  id: number;
+  title: string;
+}
+
+export const useIngredientCategories = () => {
+  return useResource<IngredientCategory[]>('https://strapi.f45training.com/ingredient-categories');
+}
 
 const useResource = <T extends object>(url: string): Resource<T>  => {
   const [resource, setResource] = useState<Resource<T>>({
