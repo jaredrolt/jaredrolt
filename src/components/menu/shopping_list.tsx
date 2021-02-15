@@ -15,7 +15,7 @@ export const ShoppingList = () => {
 
   useEffect(() => {
     if (!data) return;
-    const recipeIds = data[0].days.slice(week * 7, 7).flatMap(day =>
+    const recipeIds = data[0].days.slice(week * 7, (week + 1) * 7).flatMap(day =>
       day.meals.map(meal =>
         'id' in meal.recipe
           ? meal.recipe.id

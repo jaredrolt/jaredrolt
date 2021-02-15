@@ -113,7 +113,6 @@ export const useRecipesQuery = () => {
   });
 
   const query = useCallback((ids: number[]) => {
-    console.log('search ids', ids);
     const baseUrl = 'https://strapi.f45training.com/recipes';
     const queryString = ids.map(id => `id_in=${id}`).join('&');
     fetch(`${baseUrl}?${queryString}`)
