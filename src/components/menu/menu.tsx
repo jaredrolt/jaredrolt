@@ -1,3 +1,4 @@
+import { Link } from 'gatsby';
 import React, { useCallback, useState, MouseEvent, useEffect, useMemo } from 'react';
 import { MenuPlannings, useMenuPlannings, useRecipesQuery } from './api';
 
@@ -37,6 +38,41 @@ export const Menu = () => {
     return recipes?.data?.find(recipe => 'id' in selectedMeal.recipe && recipe.id === selectedMeal.recipe.id);
   }, [recipes, selectedMeal]);
 
+  const [selectedRecipes, setSelectedRecipes] = useState<{[key:number]:number[]}>({});
+
+  useEffect(() => {
+    const selectedRecipes = JSON.parse(window.localStorage.getItem('selectedRecipes') || 'null');
+    if (selectedRecipes) {
+      setSelectedRecipes(selectedRecipes);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('selectedRecipes', JSON.stringify(selectedRecipes));
+  }, [selectedRecipes]);
+
+  const handleToggleMeal = useCallback((meal: MealType) => {
+    if (!('id' in meal.recipe)) return;
+
+    const selectedRecipesForWeek = selectedRecipes[week];
+    const recipeId = meal.recipe.id;
+
+    if (!selectedRecipesForWeek) {
+      setSelectedRecipes(selectedRecipes => ({
+        ...selectedRecipes,
+        [week]: [recipeId],
+      }));
+      return;
+    }
+    const shouldToggleOff = selectedRecipesForWeek.indexOf(recipeId) > -1;
+    setSelectedRecipes(selectedRecipes => ({
+      ...selectedRecipes,
+      [week]: shouldToggleOff
+        ? selectedRecipesForWeek.filter((id: number) => id !== recipeId)
+        : [...selectedRecipesForWeek, recipeId],
+    }));
+  }, [selectedRecipes, week]);
+
   if (!data) {
     return (
       <select>
@@ -47,10 +83,13 @@ export const Menu = () => {
 
   return (
     <div className="menu">
-      <SelectWeek value={week} onChange={handleWeekChange} />
+      <div className="header">
+        <SelectWeek value={week} onChange={handleWeekChange} />
+        <Link to="/shopping-list">Shopping List</Link>
+      </div>
       <h1>Menu - Week {week + 1}</h1>
       {weeks.map((_, weekIndex) => (
-        <Day key={weekIndex} day={data[0].days[(week * 7) + weekIndex]} onSelectMeal={handleSelectMeal}  />
+        <Day key={weekIndex} day={data[0].days[(week * 7) + weekIndex]} onSelectMeal={handleSelectMeal} selectedRecipes={selectedRecipes[week] || []} onIncludeMealToggle={handleToggleMeal}  />
       ))}
       {selectedMeal && 'id' in selectedMeal.recipe && (
         <>
@@ -83,27 +122,30 @@ export const Menu = () => {
   );
 };
 
-const Day = ({ day, onSelectMeal }: { day: WeekDay, onSelectMeal?: (day: WeekDay, meal: MealType) => void }) => {
+const Day = ({ day, onSelectMeal, onIncludeMealToggle, selectedRecipes }: { day: WeekDay, selectedRecipes: number[], onSelectMeal?: (day: WeekDay, meal: MealType) => void, onIncludeMealToggle?: (meal: MealType) => void }) => {
   return (
     <div>
       <h5>{day.title}</h5>
       <div className="meals">
         {day.meals.map((meal, mealIndex) => (
-          <Meal key={mealIndex} meal={meal} onClick={() => onSelectMeal?.(day, meal)} />
+          <Meal key={mealIndex} meal={meal} included={'id' in meal.recipe && selectedRecipes.indexOf(meal.recipe.id) > -1} onClick={() => onSelectMeal?.(day, meal)} onIncludeToggle={() => onIncludeMealToggle?.(meal)} />
         ))}
       </div>
     </div>
   );
 };
 
-const Meal = ({ meal, onClick }: { meal: MealType, onClick?: () => void }) => {
+const Meal = ({ meal, included, onClick, onIncludeToggle }: { meal: MealType, included: boolean, onClick?: () => void, onIncludeToggle?: () => void }) => {
   if (!('id' in meal.recipe)) {
     return null;
   }
 
   return (
     <div className="meal" onClick={onClick}>
-      <h6>{meal.title}</h6>
+      <div className="meal-header">
+        <h6>{meal.title}</h6>
+        <label onClick={e => e.stopPropagation()}>Include <input type="checkbox" checked={included} onChange={onIncludeToggle} /></label>
+      </div>
       <img src={meal.recipe.feature_image.url} />
       <h6>{meal.recipe.title}</h6>
     </div>

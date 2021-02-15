@@ -1,3 +1,4 @@
+import { Link } from 'gatsby';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IngredientCategory, RecipeIngredient, useIngredientCategories, useMenuPlannings, useRecipesQuery } from './api';
 import { SelectWeek, exists } from './menu';
@@ -15,12 +16,18 @@ export const ShoppingList = () => {
 
   useEffect(() => {
     if (!data) return;
-    const recipeIds = data[0].days.slice(week * 7, (week + 1) * 7).flatMap(day =>
-      day.meals.map(meal =>
-        'id' in meal.recipe
-          ? meal.recipe.id
-          : undefined)
-      .filter(exists));
+    let recipeIds = [];
+    const selectedRecipeIds = JSON.parse(window.localStorage.getItem('selectedRecipes') || 'null');
+    const selectedRecipeIdsForWeek = selectedRecipeIds[week] || [];
+    recipeIds = selectedRecipeIdsForWeek;
+    if (recipeIds.length === 0) {
+      recipeIds = data[0].days.slice(week * 7, (week + 1) * 7).flatMap(day =>
+        day.meals.map(meal =>
+          'id' in meal.recipe
+            ? meal.recipe.id
+            : undefined)
+        .filter(exists));
+    }
     getRecipes(Array.from(new Set(recipeIds)));
   }, [data, week]);
 
@@ -53,10 +60,13 @@ export const ShoppingList = () => {
 
   return (
     <div className="shopping-list">
-      <SelectWeek value={week} onChange={handleWeekChange} />
-      <h1>Menu - Week {week + 1}</h1>
-      {shoppingCategories.map(category => (
-        <div key={category.categoryId}>
+      <div className="header">
+        <SelectWeek value={week} onChange={handleWeekChange} />
+        <Link to="/menu">Menu</Link>
+      </div>
+      <h1>Shopping List - Week {week + 1}</h1>
+      {shoppingCategories.map((category, categoryIndex) => (
+        <div key={categoryIndex}>
           <h5>{category.title}</h5>
           <ul>
             {category.ingredients.map(ingredient => (

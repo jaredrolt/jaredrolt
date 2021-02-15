@@ -6,6 +6,11 @@ body {
   font-family: Roboto, sans-serif;
 }
 
+h1 {
+  font-size: 2rem;
+  margin: 1rem 0;
+}
+
 .menu {
   padding: 8px;
   max-width: calc(#{$meal-width} * 5 + 16px);
@@ -36,6 +41,11 @@ body {
   img {
     max-width: 100%;
   }
+}
+
+.meal-header {
+  display: flex;
+  justify-content: space-between;
 }
 
 .modalx {
