@@ -15,14 +15,14 @@ export const ShoppingList = () => {
 
   useEffect(() => {
     if (!data) return;
-    const recipeIds = data[0].days.flatMap(day =>
+    const recipeIds = data[0].days.slice(week * 7, 7).flatMap(day =>
       day.meals.map(meal =>
         'id' in meal.recipe
           ? meal.recipe.id
           : undefined)
       .filter(exists));
-    getRecipes(recipeIds);
-  }, [data]);
+    getRecipes(Array.from(new Set(recipeIds)));
+  }, [data, week]);
 
   const ingredients = useMemo(() => {
     if (!recipes.data) return [];
