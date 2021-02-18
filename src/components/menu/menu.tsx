@@ -112,7 +112,7 @@ export const Menu = () => {
           <div className="modal-bg" onClick={handleCloseModal} />
           <div className="modalx">
             <h3>{selectedMeal.title}</h3>
-            <img src={selectedMeal.recipe.feature_image.url} alt={selectedMeal.recipe.feature_image.name} />
+            <img height={213} src={selectedMeal.recipe.feature_image.url} alt={selectedMeal.recipe.feature_image.name} />
             <h2>{selectedMeal.recipe.title}</h2>
             {selectedRecipeData && (
               <div className="ingredients">
@@ -159,12 +159,14 @@ export const Menu = () => {
 
 const Day = ({ day, onSelectMeal, onIncludeMealToggle, selectedRecipes }: { day: WeekDay, selectedRecipes: number[], onSelectMeal?: (day: WeekDay, meal: MealType) => void, onIncludeMealToggle?: (meal: MealType) => void }) => {
   return (
-    <div>
-      <h5>{day.title}</h5>
-      <div className="meals">
-        {day.meals.map((meal, mealIndex) => (
-          <Meal key={mealIndex} meal={meal} included={'id' in meal.recipe && selectedRecipes.indexOf(meal.recipe.id) > -1} onClick={() => onSelectMeal?.(day, meal)} onIncludeToggle={() => onIncludeMealToggle?.(meal)} />
-        ))}
+    <div className="day">
+      <h5 className="day-title">{day.title}</h5>
+      <div className="meals-wrapper">
+        <div className="meals">
+          {day.meals.map((meal, mealIndex) => (
+            <Meal key={mealIndex} meal={meal} included={'id' in meal.recipe && selectedRecipes.indexOf(meal.recipe.id) > -1} onClick={() => onSelectMeal?.(day, meal)} onIncludeToggle={() => onIncludeMealToggle?.(meal)} />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -182,7 +184,7 @@ const Meal = ({ meal, included, onClick, onIncludeToggle }: { meal: MealType, in
         <label onClick={e => e.stopPropagation()}>Incl. <input type="checkbox" checked={included} onChange={onIncludeToggle} /></label>
       </div>
       <img src={meal.recipe.feature_image.url} />
-      <h6>{meal.recipe.title}</h6>
+      <h6 className="recipe-title">{meal.recipe.title}</h6>
     </div>
   );
 }

@@ -1,8 +1,20 @@
 $meal-width: 180px;
 
+$primary-color: #6f9074;
+$dark-color: #201e18;
+$light-color: #d2dfd8dc;
+$medium-color: #bed3c5;
+$shadow-color: #576657dd;
+$dark-primary: #415a40;
+$what: #a3a9a3;
+
+a {
+  color: $dark-primary;
+}
+
 body {
   font-family: Verdana, sans-serif;
-  color: #444;
+  color: $dark-color;
 }
 
 h1 {
@@ -14,13 +26,18 @@ h1 {
   padding: 8px;
   max-width: calc(#{$meal-width} * 5 + 16px);
   margin: 0 auto;
+  background: $light-color;
+}
+
+.meals-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .meals {
-  display: flex;
-  overflow-x: auto;
-  max-width: 100%;
+  display: inline-flex;
   align-items: flex-start;
+  padding: 8px 8px 16px;
 }
 
 .meal {
@@ -29,12 +46,13 @@ h1 {
   flex-direction: column;
   padding: 8px;
   flex-shrink: 0;
-  background-color: #f6f6f6;
+  background-color: #fff;
   margin-right: 8px;
-  border-radius: 4px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px -10px $shadow-color;
 
   &:first-child {
-    margin-left: 0;
+    // margin-left: 0;
   }
 
   &:last-child {
@@ -47,9 +65,30 @@ h1 {
   }
 }
 
+.recipe-title {
+  margin: 8px 0 4px;
+  color: $dark-color;
+}
+
 .meal-header {
   display: flex;
   justify-content: space-between;
+  color: $what;
+
+  label {
+    line-height: 1.2;
+  }
+}
+
+.day {
+  // box-shadow: inset 0 0 10px #000000;
+  padding: 8px 0 0;
+  border-top: 1px dashed $shadow-color;
+  margin: 0 -8px;
+}
+
+.day-title {
+  padding: 0 8px;
 }
 
 .modalx {
@@ -101,7 +140,7 @@ h1 {
 }
 
 .link-button {
-  color: #007bff;
+  color: $dark-primary;
   text-decoration: underline;
   background: none;
   border: none;
