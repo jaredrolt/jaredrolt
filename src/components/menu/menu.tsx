@@ -93,6 +93,8 @@ export const Menu = () => {
     );
   }
 
+  const nutrition = selectedRecipeData?.recipe_data[0].nutrition;
+
   return (
     <div className="menu">
       <div className="header">
@@ -126,6 +128,26 @@ export const Menu = () => {
               <>
                 <h4>Method</h4>
                 <div dangerouslySetInnerHTML={{ __html: selectedRecipeData.recipe_data[0].method }} />
+              </>
+            )}
+            {nutrition && (
+              <>
+                <h4>Nutrition</h4>
+                <table className="nutrition-table">
+                  <thead>
+                    <tr>
+                      <th colSpan={2}>Per serve ({nutrition.nutritional_information.serving_size})</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {nutrition.nutritional_information.nutrients.map((nutrient, nutrientIndex) => (
+                      <tr key={nutrientIndex}>
+                        <td>{nutrient.title}</td>
+                        <td>{nutrient.qty_per_serving}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </>
             )}
           </div>
