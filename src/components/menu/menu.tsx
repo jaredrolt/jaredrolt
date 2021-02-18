@@ -17,7 +17,6 @@ export const exists = <T,>(x: T | undefined): x is T => x !== undefined;
 export const Menu = () => {
   const [week, setWeek] = useWeek();
   const handleWeekChange = useCallback(week => setWeek(week), []);
-  const weeks = Array.from(Array(7));
   const [selectedMeal, setSelectedMeal] = useState<MealType|undefined>();
   const handleSelectMeal = useCallback((_, meal: MealType) => setSelectedMeal(meal), []);
   const handleCloseModal = useCallback((e: MouseEvent) => {
@@ -29,15 +28,19 @@ export const Menu = () => {
 
   const { query: getRecipes, resource: recipes } = useRecipesQuery();
 
-  const recipeIds = useMemo(() => {
+  const days = useMemo(() => {
     if (!data) return [];
-    return data[0].days.slice(week * 7, (1 + week) * 7).flatMap(day =>
+    return data[0].days.slice(week * 7, (1 + week) * 7);
+  }, [data, week]);
+
+  const recipeIds = useMemo(() => {
+    return days.flatMap(day =>
       day.meals.map(meal =>
         'id' in meal.recipe
           ? meal.recipe.id
           : undefined)
       .filter(exists));
-  }, [data, week]);
+  }, [days]);
 
   useEffect(() => {
     if (!recipeIds.length) return;
@@ -98,8 +101,8 @@ export const Menu = () => {
       </div>
       <h1>Menu - Week {week + 1}</h1>
       <button className="link-button" onClick={handleToggleIncludes}>Toggle includes</button>
-      {weeks.map((_, weekIndex) => (
-        <Day key={weekIndex} day={data[0].days[(week * 7) + weekIndex]} onSelectMeal={handleSelectMeal} selectedRecipes={selectedRecipes[week] || []} onIncludeMealToggle={handleToggleMeal}  />
+      {days.map((day, dayIndex) => (
+        <Day key={dayIndex} day={day} onSelectMeal={handleSelectMeal} selectedRecipes={selectedRecipes[week] || []} onIncludeMealToggle={handleToggleMeal}  />
       ))}
       {selectedMeal && 'id' in selectedMeal.recipe && (
         <>
@@ -154,7 +157,7 @@ const Meal = ({ meal, included, onClick, onIncludeToggle }: { meal: MealType, in
     <div className="meal" onClick={onClick}>
       <div className="meal-header">
         <h6>{meal.title}</h6>
-        <label onClick={e => e.stopPropagation()}>Include <input type="checkbox" checked={included} onChange={onIncludeToggle} /></label>
+        <label onClick={e => e.stopPropagation()}>Incl. <input type="checkbox" checked={included} onChange={onIncludeToggle} /></label>
       </div>
       <img src={meal.recipe.feature_image.url} />
       <h6>{meal.recipe.title}</h6>
