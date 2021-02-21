@@ -2,23 +2,34 @@ import { Link } from 'gatsby';
 import React, { useCallback, useState, MouseEvent, useEffect, useMemo } from 'react';
 import { useLocalStorage } from '../../util/use_local_storage';
 import { MenuPlannings, useMenuPlannings, useRecipesQuery } from './api';
+import { RecipeSearch } from './recipe_search';
 
 const LOCAL_STORAGE_WEEK = 'week';
 const LOCAL_STORAGE_SELECTED_RECIPES = 'selectedRecipes';
+const LOCAL_STORAGE_RECIPE_OVERRIDES = 'recipeOverrides';
 
+export const useRecipeOverrides = () => useLocalStorage<Record<number, number>>(LOCAL_STORAGE_RECIPE_OVERRIDES, {});
 export const useSelectedRecipeIds = () => useLocalStorage<{[key:number]:number[]}>(LOCAL_STORAGE_SELECTED_RECIPES, {});
 export const useWeek = () => useLocalStorage<number>(LOCAL_STORAGE_WEEK, 0);
 
 export type WeekDay = MenuPlannings[0]['days'][0];
 export type MealType = WeekDay['meals'][0];
 
+export type MealTypeWithOverrides = MealType & {
+  recipeOverride?: MealType['recipe'];
+};
+
+export type WeekDayWithOverrides = Omit<WeekDay, 'meals'> & {
+  meals: Array<MealTypeWithOverrides>;
+};
+
 export const exists = <T,>(x: T | undefined): x is T => x !== undefined;
 
 export const Menu = () => {
   const [week, setWeek] = useWeek();
   const handleWeekChange = useCallback(week => setWeek(week), []);
-  const [selectedMeal, setSelectedMeal] = useState<MealType|undefined>();
-  const handleSelectMeal = useCallback((_, meal: MealType) => setSelectedMeal(meal), []);
+  const [selectedMeal, setSelectedMeal] = useState<MealTypeWithOverrides|undefined>();
+  const handleSelectMeal = useCallback((_, meal: MealTypeWithOverrides) => setSelectedMeal(meal), []);
   const handleCloseModal = useCallback((e: MouseEvent) => {
     if (e.target !== e.currentTarget) return;
     setSelectedMeal(undefined);
@@ -33,14 +44,35 @@ export const Menu = () => {
     return data[0].days.slice(week * 7, (1 + week) * 7);
   }, [data, week]);
 
+  
+  const [recipeOverrides, setRecipeOverrides] = useRecipeOverrides();
+
+  const daysWithOverrides = useMemo(() => {
+    return days.map(day => ({
+      ...day,
+      meals: day.meals.map(meal => ({
+        ...meal,
+        ...('id' in meal.recipe && recipeOverrides[meal.recipe.id] ? {
+          recipeOverride: recipes.data?.find(recipe => 'id' in meal.recipe && recipe.id === recipeOverrides[meal.recipe.id]),
+        } : {}),
+      })),
+    }));
+  }, [days, recipeOverrides, recipes]);
+
   const recipeIds = useMemo(() => {
-    return days.flatMap(day =>
+    const fromDays = days.flatMap(day =>
       day.meals.map(meal =>
         'id' in meal.recipe
           ? meal.recipe.id
           : undefined)
       .filter(exists));
-  }, [days]);
+    const fromOverrides = Object.keys(recipeOverrides)
+        .map(id => recipeOverrides[Number(id)]);
+    return Array.from(new Set([
+      ...fromDays,
+      ...fromOverrides,
+    ]));
+  }, [days, recipeOverrides]);
 
   useEffect(() => {
     if (!recipeIds.length) return;
@@ -48,11 +80,29 @@ export const Menu = () => {
   }, [recipeIds]);
 
   const selectedRecipeData = useMemo(() => {
-    if (!selectedMeal || !('id' in selectedMeal.recipe)) return;
-    return recipes?.data?.find(recipe => 'id' in selectedMeal.recipe && recipe.id === selectedMeal.recipe.id);
+    const selectedRecipeId = selectedMeal && selectedMeal.recipeOverride
+    ? ('id' in selectedMeal.recipeOverride ? selectedMeal.recipeOverride.id : undefined)
+    : (selectedMeal && 'id' in selectedMeal.recipe ? selectedMeal.recipe.id : undefined);
+
+    return recipes?.data?.find(recipe => recipe.id === selectedRecipeId);
   }, [recipes, selectedMeal]);
 
   const [selectedRecipes, setSelectedRecipes] = useSelectedRecipeIds();
+
+  const [showRecipeSearch, setShowRecipeSearch] = useState(false);
+  const handleOpenRecipeSearch = useCallback(() => setShowRecipeSearch(true), []);
+  const handleCloseRecipeSearch = useCallback(() => setShowRecipeSearch(false), []);
+
+  const handleSelectOverride = useCallback((recipeId: number) => {
+    if (!selectedMeal?.recipe || !('id' in selectedMeal.recipe)) return;
+    const originalRecipeId = selectedMeal.recipe.id;
+    if (!window.confirm(`Confirm replace with recipe ${recipeId}`)) return;
+    setRecipeOverrides(existing => ({
+      ...existing,
+      [originalRecipeId]: recipeId,
+    }));
+    setShowRecipeSearch(false);
+  }, [recipeOverrides, selectedMeal]);
 
   const handleToggleMeal = useCallback((meal: MealType) => {
     if (!('id' in meal.recipe)) return;
@@ -103,7 +153,7 @@ export const Menu = () => {
       </div>
       <h1>Menu - Week {week + 1}</h1>
       <button className="link-button" onClick={handleToggleIncludes}>Toggle includes</button>
-      {days.map((day, dayIndex) => (
+      {daysWithOverrides.map((day, dayIndex) => (
         <Day key={dayIndex} day={day} onSelectMeal={handleSelectMeal} selectedRecipes={selectedRecipes[week] || []} onIncludeMealToggle={handleToggleMeal}  />
       ))}
       {selectedMeal && 'id' in selectedMeal.recipe && (
@@ -111,9 +161,17 @@ export const Menu = () => {
           <style dangerouslySetInnerHTML={{ __html: 'body { overflow: hidden; }' }} />
           <div className="modal-bg" onClick={handleCloseModal} />
           <div className="modalx">
-            <h3>{selectedMeal.title}</h3>
-            <img height={213} src={selectedMeal.recipe.feature_image.url} alt={selectedMeal.recipe.feature_image.name} />
-            <h2>{selectedMeal.recipe.title}</h2>
+            <div className="modal-header">
+              <h3>{selectedMeal.title}</h3>
+              <button onClick={handleOpenRecipeSearch}>Replace</button>
+            </div>
+            {selectedMeal.recipeOverride && 'id' in selectedMeal.recipeOverride && (
+              <img height={213} src={selectedMeal.recipeOverride.feature_image.url} alt={selectedMeal.recipeOverride.feature_image.name} />
+            )}
+            {!selectedMeal.recipeOverride && (
+              <img height={213} src={selectedMeal.recipe.feature_image.url} alt={selectedMeal.recipe.feature_image.name} />
+            )}
+            <h2>{selectedMeal.recipeOverride && 'id' in selectedMeal.recipeOverride ? selectedMeal.recipeOverride.title : selectedMeal.recipe.title}</h2>
             {selectedRecipeData && (
               <div className="ingredients">
                 <h4>Ingredients</h4>
@@ -151,13 +209,26 @@ export const Menu = () => {
               </>
             )}
           </div>
+          {showRecipeSearch && (
+            <>
+              <style dangerouslySetInnerHTML={{ __html: 'body { overflow: hidden; }' }} />
+              <div className="modal-bg" onClick={handleCloseRecipeSearch} />
+              <div className="modalx">
+                <RecipeSearch
+                  mealTypeName={selectedMeal.meal_type.title}
+                  mealTypeId={selectedMeal.meal_type.id}
+                  onSelectMeal={handleSelectOverride}
+                />
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
   );
 };
 
-const Day = ({ day, onSelectMeal, onIncludeMealToggle, selectedRecipes }: { day: WeekDay, selectedRecipes: number[], onSelectMeal?: (day: WeekDay, meal: MealType) => void, onIncludeMealToggle?: (meal: MealType) => void }) => {
+const Day = ({ day, onSelectMeal, onIncludeMealToggle, selectedRecipes }: { day: WeekDayWithOverrides, selectedRecipes: number[], onSelectMeal?: (day: WeekDay, meal: MealType) => void, onIncludeMealToggle?: (meal: MealType) => void }) => {
   return (
     <div className="day">
       <h5 className="day-title">{day.title}</h5>
@@ -172,8 +243,12 @@ const Day = ({ day, onSelectMeal, onIncludeMealToggle, selectedRecipes }: { day:
   );
 };
 
-const Meal = ({ meal, included, onClick, onIncludeToggle }: { meal: MealType, included: boolean, onClick?: () => void, onIncludeToggle?: () => void }) => {
-  if (!('id' in meal.recipe)) {
+const Meal = ({ meal, included, onClick, onIncludeToggle }: { meal: MealTypeWithOverrides, included: boolean, onClick?: () => void, onIncludeToggle?: () => void }) => {
+  const recipe = (meal.recipeOverride && 'id' in meal.recipeOverride)
+    ? meal.recipeOverride
+    : (meal.recipe && 'id' in meal.recipe ? meal.recipe : undefined);
+
+  if (!recipe) {
     return null;
   }
 
@@ -183,8 +258,8 @@ const Meal = ({ meal, included, onClick, onIncludeToggle }: { meal: MealType, in
         <h6>{meal.title}</h6>
         <label onClick={e => e.stopPropagation()}>Incl. <input type="checkbox" checked={included} onChange={onIncludeToggle} /></label>
       </div>
-      <img src={meal.recipe.feature_image.url} />
-      <h6 className="recipe-title">{meal.recipe.title}</h6>
+      <img src={recipe.feature_image.url} />
+      <h6 className="recipe-title">{recipe.title}</h6>
     </div>
   );
 }

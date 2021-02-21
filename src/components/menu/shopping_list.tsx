@@ -1,7 +1,7 @@
 import { Link } from 'gatsby';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { IngredientCategory, RecipeIngredient, useIngredientCategories, useMenuPlannings, useRecipesQuery } from './api';
-import { SelectWeek, exists, useSelectedRecipeIds, useWeek } from './menu';
+import { SelectWeek, exists, useSelectedRecipeIds, useWeek, useRecipeOverrides } from './menu';
 
 export const ShoppingList = () => {
   const [week, setWeek] = useWeek();
@@ -14,6 +14,8 @@ export const ShoppingList = () => {
   const { data: ingredientCategories } = useIngredientCategories();
 
   const [selectedRecipeIds] = useSelectedRecipeIds();
+
+  const [recipeOverrides] = useRecipeOverrides();
 
   useEffect(() => {
     if (!data) return;
@@ -28,8 +30,9 @@ export const ShoppingList = () => {
             : undefined)
         .filter(exists));
     }
+    recipeIds = recipeIds.map(recipeId => recipeOverrides[recipeId] || recipeId);
     getRecipes(Array.from(new Set(recipeIds)));
-  }, [data, week, selectedRecipeIds]);
+  }, [data, week, selectedRecipeIds, recipeOverrides]);
 
   const ingredients = useMemo(() => {
     if (!recipes.data) return [];

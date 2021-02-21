@@ -96,11 +96,10 @@ h1 {
   position: fixed;
   top: 16px;
   left: 16px;
-  width: calc(100vw - 32px);
+  width: calc(100vw - 46px);
   max-height: calc(100vh - 132px);
   padding: 8px;
   border-radius: 4px;
-  max-width: 320px;
   z-index: 10;
   overflow-y: auto;
   box-sizing: content-box;
@@ -126,6 +125,11 @@ h1 {
   height: 100%;
   background: rgba(0, 0, 0, 0.7);
   z-index: 10;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
 }
 
 .ingredients {

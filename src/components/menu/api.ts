@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { debounce } from 'debounce';
 
 export type MenuPlannings = Array<{
   challenge: {
@@ -78,6 +79,9 @@ export type Recipes = Array<{
     url: string;
   };
   id: number;
+  meal_types: Array<{
+    id: number;
+  }>;
   recipe_data: Array<{
     country: string;
     gender: string;
@@ -138,6 +142,32 @@ export type IngredientCategory = {
 
 export const useIngredientCategories = () => {
   return useResource<IngredientCategory[]>('https://strapi.f45training.com/ingredient-categories');
+}
+
+export const useRecipeSearch = () => {
+  const [resource, setResource] = useState<Resource<Recipes>>({
+    loading: true,
+    data: undefined,
+  });
+
+  const query = useCallback(debounce((input: string) => {
+    const baseUrl = 'https://strapi.f45training.com/recipes';
+    const queryString = `_q=${input}&_limit=30`;
+    setResource({ data: undefined, loading: true });
+    fetch(`${baseUrl}?${queryString}`)
+      .then(response => response.json())
+      .then(response => {
+        setResource({
+          loading: false,
+          data: response,
+        });
+      });
+  }, 500), []);
+
+  return {
+    query,
+    resource,
+  };
 }
 
 const useResource = <T extends object>(url: string): Resource<T>  => {

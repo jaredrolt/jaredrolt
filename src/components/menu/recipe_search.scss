@@ -1,0 +1,28 @@
+@import './menu.scss';
+
+.search-results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 8px;
+  column-gap: 8px;
+  background: #f6f6f6;
+}
+
+.result {
+  padding: 8px;
+  flex-shrink: 0;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px -10px $shadow-color;
+
+  img {
+    width: 100%;
+    border-radius: 4px;
+  }
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 16px;
+}
