@@ -1,6 +1,21 @@
 import React, { useCallback, useState } from 'react';
 import FacebookLogin, { ReactFacebookFailureResponse, ReactFacebookLoginInfo } from 'react-facebook-login';
 
+function getCookie(name: string) {
+  if (!document.cookie) {
+    return null;
+  }
+
+  const xsrfCookies = document.cookie.split(';')
+    .map(c => c.trim())
+    .filter(c => c.startsWith(name + '='));
+
+  if (xsrfCookies.length === 0) {
+    return null;
+  }
+  return decodeURIComponent(xsrfCookies[0].split('=')[1]);
+}
+
 export const Login = () => {
   const [user, setUser] = useState('');
   const callback = useCallback(async (response: ReactFacebookLoginInfo|ReactFacebookFailureResponse) => {
@@ -14,6 +29,7 @@ export const Login = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-XSRF-TOKEN': String(getCookie('XSRF-TOKEN')),
       },
       body: JSON.stringify({
         access_token: response.accessToken,
