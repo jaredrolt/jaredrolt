@@ -1,0 +1,7 @@
+[[redirects]]
+  from = "/api/*"
+  to = "https://api.jaredrolt.com/:splat"
+  status = 200
+  force = true
+  [redirects.headers]
+    X-From = "Netlify"
