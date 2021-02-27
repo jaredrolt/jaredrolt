@@ -9,7 +9,7 @@ export const Login = () => {
       return;
     }
 
-    await fetch('/api/csrf-cookie');
+    await fetch('/api/sanctum/csrf-cookie');
     const loginResponse = await fetch('/api/auth/login', {
       method: 'POST',
       headers: {
