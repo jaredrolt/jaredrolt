@@ -19,11 +19,13 @@ function getCookie(name: string) {
 export const Login = () => {
   const [user, setUser] = useState('');
   const callback = useCallback(async (response: ReactFacebookLoginInfo|ReactFacebookFailureResponse) => {
+    console.log('login callback');
     if (!('accessToken' in response)) {
       window.alert('Failed to login with FB');
       return;
     }
 
+    console.log('getting cookie');
     await fetch('/api/sanctum/csrf-cookie');
     const loginResponse = await fetch('/api/auth/login', {
       method: 'POST',
@@ -35,6 +37,8 @@ export const Login = () => {
         access_token: response.accessToken,
       }),
     }).then(response => response.json());
+
+    console.log(loginResponse);
 
     if (!loginResponse || loginResponse.message !== 'success') {
       window.alert('Failed to login');
@@ -48,7 +52,7 @@ export const Login = () => {
   return (
     <div>
       <h1>This is the login</h1>
-      {!user && <FacebookLogin appId={String(process.env.GATSBY_FACEBOOK_APP_ID)} callback={callback}  />}
+      {!user && <FacebookLogin appId={String(process.env.GATSBY_FACEBOOK_APP_ID)} callback={callback} />}
       {user && (
         <div>
           Welcome, {user} :)
