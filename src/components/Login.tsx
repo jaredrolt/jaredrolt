@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import FacebookLogin, { ReactFacebookFailureResponse, ReactFacebookLoginInfo } from 'react-facebook-login';
 
 function getCookie(name: string) {
@@ -17,6 +17,7 @@ function getCookie(name: string) {
 }
 
 export const Login = () => {
+  console.log('render Login');
   const [user, setUser] = useState('');
   const callback = useCallback(async (response: ReactFacebookLoginInfo|ReactFacebookFailureResponse) => {
     console.log('login callback');
@@ -47,6 +48,17 @@ export const Login = () => {
 
     const userResponse: { name: string } = await fetch('/api/user').then(response => response.json());
     setUser(userResponse.name);
+  }, []);
+
+  useEffect(() => {
+    const cookie = getCookie('XSRF-TOKEN');
+    if (cookie) {
+      fetch('/api/user').then(response => response.json()).then(response => {
+        setUser(response.name);
+      }).catch(() => {
+        console.log('Found cookie but unable to login');
+      })
+    }
   }, []);
 
   return (
