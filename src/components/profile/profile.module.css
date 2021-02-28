@@ -1,0 +1,19 @@
+.mealPlan {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.mealPlanTitle {
+  display: inline-block;
+  margin: 0;
+}
+
+.shareFlyout {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  border: 1px solid black;
+  padding: 8px;
+  background: white;
+}
