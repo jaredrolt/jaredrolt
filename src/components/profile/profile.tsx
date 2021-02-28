@@ -5,8 +5,8 @@ import styles from './profile.module.css';
 import { ShareMealPlanForm } from './share_meal_plan_form';
 
 export const Profile = () => {
-  // const { data: mealPlans } = useMealPlans();
-  const mealPlans = [{id: '123', name: 'Cool story'}];
+  const { data: mealPlans } = useMealPlans();
+  // const mealPlans = [{id: '123', name: 'Cool story'}];
 
   return (
     <div>
