@@ -1,4 +1,4 @@
-import { Link } from 'gatsby';
+import Link from 'gatsby-link';
 import React, { useCallback, useState, MouseEvent, useEffect, useMemo } from 'react';
 import { useLocalStorage } from '../../util/use_local_storage';
 import { MenuPlannings, useMenuPlannings, useRecipesQuery } from './api';

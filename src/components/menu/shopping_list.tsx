@@ -1,4 +1,4 @@
-import { Link } from 'gatsby';
+import Link from 'gatsby-link';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { IngredientCategory, RecipeIngredient, useIngredientCategories, useMenuPlannings, useRecipesQuery } from './api';
 import { SelectWeek, exists, useSelectedRecipeIds, useWeek, useRecipeOverrides } from './menu';
