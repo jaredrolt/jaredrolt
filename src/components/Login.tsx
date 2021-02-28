@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import FacebookLogin, { ReactFacebookFailureResponse, ReactFacebookLoginInfo } from 'react-facebook-login';
 
-function getCookie(name: string) {
+export function getCookie(name: string) {
   if (!document.cookie) {
     return null;
   }

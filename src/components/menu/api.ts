@@ -170,14 +170,14 @@ export const useRecipeSearch = () => {
   };
 }
 
-const useResource = <T extends object>(url: string): Resource<T>  => {
+const useResource = <T extends object>(url: string, headers?: HeadersInit): Resource<T>  => {
   const [resource, setResource] = useState<Resource<T>>({
     loading: true,
     data: undefined,
   });
 
   useEffect(() => {
-    fetch(url)
+    fetch(url, { headers })
       .then(response => response.json())
       .then(response => {
         setResource({
@@ -189,3 +189,18 @@ const useResource = <T extends object>(url: string): Resource<T>  => {
 
   return resource;
 }
+
+export type Menu = {
+  id: string;
+  name: string;
+}
+
+export const useMenus = () => useResource<Menu[]>('/api/menus');
+
+export type MealPlan = {
+  id: string;
+  menu_id: string;
+  name: string;
+};
+
+export const useMealPlans = () => useResource<Menu[]>('/api/meal-plans');
