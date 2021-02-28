@@ -50,21 +50,21 @@ export const Login = () => {
     setUser(userResponse.name);
   }, []);
 
-  useEffect(() => {
-    const cookie = getCookie('XSRF-TOKEN');
-    if (cookie) {
-      fetch('/api/user').then(response => response.json()).then(response => {
-        setUser(response.name);
-      }).catch(() => {
-        console.log('Found cookie but unable to login');
-      })
-    }
-  }, []);
+  // useEffect(() => {
+  //   const cookie = getCookie('XSRF-TOKEN');
+  //   if (cookie) {
+  //     fetch('/api/user').then(response => response.json()).then(response => {
+  //       setUser(response.name);
+  //     }).catch(() => {
+  //       console.log('Found cookie but unable to login');
+  //     })
+  //   }
+  // }, []);
 
   return (
     <div>
       <h1>This is the login</h1>
-      {!user && <FacebookLogin appId={String(process.env.GATSBY_FACEBOOK_APP_ID)} callback={callback} />}
+      {!user && <FacebookLogin appId={String(process.env.GATSBY_FACEBOOK_APP_ID)} callback={callback} disableMobileRedirect={true} />}
       {user && (
         <div>
           Welcome, {user} :)
