@@ -149,6 +149,7 @@ export const Menu = () => {
     <div className="menu">
       <div className="header">
         <SelectWeek value={week} onChange={handleWeekChange} />
+        <Link to="/profile">Profile</Link>
         <Link to="/shopping-list">Shopping List</Link>
       </div>
       <h1>Menu - Week {week + 1}</h1>

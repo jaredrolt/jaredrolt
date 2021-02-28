@@ -1,5 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import FacebookLogin, { ReactFacebookFailureResponse, ReactFacebookLoginInfo } from 'react-facebook-login';
+import { Link } from 'gatsby';
+import { useEffect } from '@storybook/addons';
 
 export function getCookie(name: string) {
   if (!document.cookie) {
@@ -61,13 +63,23 @@ export const Login = () => {
   //   }
   // }, []);
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectPath = urlParams.get('redirect');
+    if (user && redirectPath) {
+      window.location.href = `/${redirectPath}`;
+    }
+  }, [user]);
+
   return (
     <div>
       <h1>This is the login</h1>
       {!user && <FacebookLogin appId={String(process.env.GATSBY_FACEBOOK_APP_ID)} callback={callback} disableMobileRedirect={true} />}
       {user && (
         <div>
-          Welcome, {user} :)
+          Welcome, {user.split(' ')[0]} :)
+          <br/>
+          <Link to="/menu">View meal plan</Link>
         </div>
       )}
     </div>

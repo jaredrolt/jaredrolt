@@ -1,4 +1,4 @@
-import React, { useCallback, useState} from 'react';
+import React, { useCallback, useState, ChangeEvent} from 'react';
 import { getCookie } from '../Login';
 
 export type ShareMealPlanFormProps = {
@@ -13,7 +13,7 @@ export const ShareMealPlanForm = ({ mealPlanId }: ShareMealPlanFormProps) => {
   const [sending, setSending] = useState(false);
   const handleSendInvite = useCallback(async () => {
     setSending(true);
-    // await fetch('/api/sanctum/csrf-cookie');
+    await fetch('/api/sanctum/csrf-cookie');
     fetch('/api/meal-plans/share', {
       method: 'POST',
       headers: {

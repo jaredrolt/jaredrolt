@@ -193,14 +193,26 @@ const useResource = <T extends object>(url: string, headers?: HeadersInit): Reso
 export type Menu = {
   id: string;
   name: string;
+  source: string;
+  source_id: string;
 }
 
 export const useMenus = () => useResource<Menu[]>('/api/menus');
+
+export type RecipeOverride = {
+  id: string;
+  meal_plan_id: string;
+  week_starting_at: string;
+  original_recipe_id: string;
+  replacement_recipe_id: string;
+}
 
 export type MealPlan = {
   id: string;
   menu_id: string;
   name: string;
+  menu: Menu;
+  recipe_overrides: Array<RecipeOverride>;
 };
 
-export const useMealPlans = () => useResource<Menu[]>('/api/meal-plans');
+export const useMealPlans = () => useResource<MealPlan[]>('/api/meal-plans');

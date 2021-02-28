@@ -63,6 +63,7 @@ export const ShoppingList = () => {
     <div className="shopping-list">
       <div className="header">
         <SelectWeek value={week} onChange={handleWeekChange} />
+        <Link to="/profile">Profile</Link>
         <Link to="/menu">Menu</Link>
       </div>
       <h1>Shopping List - Week {week + 1}</h1>
