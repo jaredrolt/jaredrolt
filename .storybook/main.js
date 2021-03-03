@@ -2,8 +2,8 @@ module.exports = {
   stories: ['../src/**/*.stories.tsx'],
   addons: [
    'storybook-css-modules-preset',
-   '@storybook/addon-actions/register',
-   '@storybook/addon-links/register',
+   '@storybook/addon-actions',
+   '@storybook/addon-links',
   ],
   webpackFinal: async config => {
     // Transpile Gatsby module because Gatsby includes un-transpiled ES6 code.

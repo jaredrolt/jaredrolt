@@ -4,6 +4,10 @@ module.exports = {
     description: `Frontend at Canva`,
   },
   plugins: [
+    {
+      resolve: 'gatsby-plugin-exclude',
+      options: { paths: ['/**/*.stories.tsx'] },
+    },
     `gatsby-plugin-react-helmet`,
     'gatsby-plugin-typescript',
     {

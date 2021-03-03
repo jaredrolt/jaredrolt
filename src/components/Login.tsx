@@ -1,7 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import FacebookLogin, { ReactFacebookFailureResponse, ReactFacebookLoginInfo } from 'react-facebook-login';
 import { Link } from 'gatsby';
-import { useEffect } from '@storybook/addons';
 
 export function getCookie(name: string) {
   if (!document.cookie) {
