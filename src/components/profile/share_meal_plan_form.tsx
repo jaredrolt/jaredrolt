@@ -1,5 +1,5 @@
 import React, { useCallback, useState, ChangeEvent} from 'react';
-import { getCookie } from '../Login';
+import { getCookie } from '../login/login';
 
 export type ShareMealPlanFormProps = {
   mealPlanId: string;

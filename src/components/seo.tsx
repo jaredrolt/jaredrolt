@@ -32,13 +32,6 @@ function SEO({ description, lang, meta, title }) {
         lang,
       }}
       title={title || site.siteMetadata.title}
-      link={[
-        {
-          href: 'https://fonts.googleapis.com/css?family=Raleway:100,500',
-          rel: 'stylesheet',
-          type: 'text/css'
-        }
-      ]}
       meta={[
         {
           name: `description`,

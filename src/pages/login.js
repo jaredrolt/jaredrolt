@@ -1,6 +1,6 @@
-import React from "react"
-import { Login } from "../components/Login"
-import SEO from "../components/seo"
+import React from 'react';
+import { Login } from '../components/login/login';
+import SEO from '../components/seo';
 
 const LoginPage = () => (
   <>
@@ -9,4 +9,4 @@ const LoginPage = () => (
   </>
 );
 
-export default LoginPage
+export default LoginPage;

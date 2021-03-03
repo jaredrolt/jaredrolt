@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useCallback, useState } from 'react';
 import { SelectMenu } from './select_menu';
-import { getCookie } from '../Login';
+import { getCookie } from '../login/login';
 
 export const CreateMealPlanForm = () => {
   const [name, setName] = useState('');
