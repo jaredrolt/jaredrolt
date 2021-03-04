@@ -4,17 +4,20 @@ $primary-color: #6f9074;
 $dark-color: #201e18;
 $light-color: #d2dfd8dc;
 $medium-color: #bed3c5;
-$shadow-color: #576657dd;
+$shadow-color: #57665777;
 $dark-primary: #415a40;
 $what: #a3a9a3;
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500&display=swap');
 
 a {
   color: $dark-primary;
 }
 
 body {
-  font-family: Verdana, sans-serif;
+  font-family: Raleway, sans-serif;
   color: $dark-color;
+  background-color: #f6f6f6;
 }
 
 h1 {
@@ -26,7 +29,7 @@ h1 {
   padding: 8px;
   max-width: calc(#{$meal-width} * 5 + 16px);
   margin: 0 auto;
-  background: $light-color;
+  // background: $light-color;
 }
 
 .meals-wrapper {
@@ -44,12 +47,11 @@ h1 {
   width: $meal-width;
   display: flex;
   flex-direction: column;
-  padding: 8px;
   flex-shrink: 0;
   background-color: #fff;
   margin-right: 8px;
   border-radius: 10px;
-  box-shadow: 0 8px 20px -10px $shadow-color;
+  box-shadow: 0 5px 15px 0 $shadow-color;
 
   &:first-child {
     // margin-left: 0;
@@ -61,19 +63,29 @@ h1 {
 
   img {
     max-width: 100%;
-    border-radius: 4px;
+    border-radius: 4px 4px 0 0;
   }
+}
+
+.meal-content {
+  padding: 8px;
 }
 
 .recipe-title {
   margin: 8px 0 4px;
   color: $dark-color;
+  font-size: 1rem;
 }
 
 .meal-header {
   display: flex;
   justify-content: space-between;
   color: $what;
+
+  h6 {
+    margin: 0;
+    font-size: 1rem;
+  }
 
   label {
     line-height: 1.2;
@@ -89,6 +101,9 @@ h1 {
 
 .day-title {
   padding: 0 8px;
+  margin: 0;
+  font-size: 1rem;
+  margin: 8px 0;
 }
 
 .modalx {

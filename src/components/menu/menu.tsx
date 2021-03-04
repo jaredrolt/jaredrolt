@@ -255,12 +255,14 @@ const Meal = ({ meal, included, onClick, onIncludeToggle }: { meal: MealTypeWith
 
   return (
     <div className="meal" onClick={onClick}>
-      <div className="meal-header">
-        <h6>{meal.title}</h6>
-        <label onClick={e => e.stopPropagation()}>Incl. <input type="checkbox" checked={included} onChange={onIncludeToggle} /></label>
-      </div>
       <img src={recipe.feature_image.url} />
-      <h6 className="recipe-title">{recipe.title}</h6>
+      <div className="meal-content">
+        <div className="meal-header">
+          <h6>{meal.title}</h6>
+          <label onClick={e => e.stopPropagation()}>Incl. <input type="checkbox" checked={included} onChange={onIncludeToggle} /></label>
+        </div>
+        <h6 className="recipe-title">{recipe.title}</h6>
+      </div>
     </div>
   );
 }

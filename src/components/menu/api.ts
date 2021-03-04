@@ -47,7 +47,7 @@ type Resource<T extends object> = {
 };
 
 export const useMenuPlannings = () => {
-  const url = 'https://strapi.f45training.com/meal-plannings?challenge.id_eq=9&dietary_preference.id_eq=3';
+  const url = 'https://strapi.f45training.com/meal-plannings?challenge.id_eq=10&dietary_preference.id_eq=3';
   return useResource<MenuPlannings>(url);
 }
 
