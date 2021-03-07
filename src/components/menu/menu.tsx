@@ -39,11 +39,16 @@ export const Menu = () => {
 
   const { query: getRecipes, resource: recipes } = useRecipesQuery();
 
+  const startOffset = useMemo(() => {
+    if (!data) return 0;
+    const startDate = new Date(data[0].challenge.start_date);
+    return startDate.getDay() - 1;
+  }, [data]);
+
   const days = useMemo(() => {
     if (!data) return [];
-    return data[0].days.slice(week * 7, (1 + week) * 7);
+    return data[0].days.slice(Math.max(0, (week * 7) - startOffset), (1 + week) * 7 - startOffset);
   }, [data, week]);
-
   
   const [recipeOverrides, setRecipeOverrides] = useRecipeOverrides();
 

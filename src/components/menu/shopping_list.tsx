@@ -19,11 +19,15 @@ export const ShoppingList = () => {
 
   useEffect(() => {
     if (!data) return;
+
+    const startDate = new Date(data[0].challenge.start_date);
+    const startOffset = startDate.getDay() - 1;
+
     let recipeIds = [];
     const selectedRecipeIdsForWeek = selectedRecipeIds[week] || [];
     recipeIds = selectedRecipeIdsForWeek;
     if (recipeIds.length === 0) {
-      recipeIds = data[0].days.slice(week * 7, (week + 1) * 7).flatMap(day =>
+      recipeIds = data[0].days.slice(week * 7 - startOffset, (week + 1) * 7 - startOffset).flatMap(day =>
         day.meals.map(meal =>
           'id' in meal.recipe
             ? meal.recipe.id
